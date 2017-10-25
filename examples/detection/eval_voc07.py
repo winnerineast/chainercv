@@ -7,8 +7,8 @@ import time
 import chainer
 from chainer import iterators
 
-from chainercv.datasets import voc_detection_label_names
-from chainercv.datasets import VOCDetectionDataset
+from chainercv.datasets import voc_bbox_label_names
+from chainercv.datasets import VOCBboxDataset
 from chainercv.evaluations import eval_detection_voc
 from chainercv.links import FasterRCNNVGG16
 from chainercv.links import SSD300
@@ -33,8 +33,6 @@ class ProgressHook(object):
 
 
 def main():
-    chainer.config.train = False
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--model', choices=('faster_rcnn', 'ssd300', 'ssd512'),
@@ -72,7 +70,7 @@ def main():
 
     model.use_preset('evaluate')
 
-    dataset = VOCDetectionDataset(
+    dataset = VOCBboxDataset(
         year='2007', split='test', use_difficult=True, return_difficult=True)
     iterator = iterators.SerialIterator(
         dataset, args.batchsize, repeat=False, shuffle=False)
@@ -92,7 +90,7 @@ def main():
 
     print()
     print('mAP: {:f}'.format(result['map']))
-    for l, name in enumerate(voc_detection_label_names):
+    for l, name in enumerate(voc_bbox_label_names):
         if result['ap'][l]:
             print('{:s}: {:f}'.format(name, result['ap'][l]))
         else:
